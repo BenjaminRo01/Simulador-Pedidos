@@ -5,6 +5,7 @@ public class Pedido {
     private final int numOrden;
     private String[] carrito;
     private int precioTotal;
+    private EstadoPedido estadoPedido;
 
     public Pedido(String[] carrito, int precioTotal) {
         this.carrito = carrito;
@@ -30,5 +31,13 @@ public class Pedido {
 
     public void setPrecioTotal(int precioTotal) {
         this.precioTotal = precioTotal;
+    }
+
+    public EstadoPedido getEstadoPedido() {
+        return estadoPedido;
+    }
+
+    public void setEstadoPedido(EstadoPedido estadoPedido) {
+        this.estadoPedido = estadoPedido;
     }
 }
