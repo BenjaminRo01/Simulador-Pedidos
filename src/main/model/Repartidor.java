@@ -3,8 +3,10 @@ package main.model;
 public class Repartidor implements Runnable{
     private static int contadorRepartidor;
     private final int numRepartidor;
+    private int maxThreads;
 
-    public Repartidor() {
+    public Repartidor(int maxThreads) {
+        this.maxThreads = maxThreads;
         this.numRepartidor = contadorRepartidor++;
     }
     @Override
