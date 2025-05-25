@@ -3,41 +3,24 @@ package main.model;
 public class Pedido {
     private static int contadorOrden;
     private final int numOrden;
-    private String[] carrito;
-    private int precioTotal;
     private EstadoPedido estadoPedido;
+    private Cliente cliente;
 
-    public Pedido(String[] carrito, int precioTotal) {
-        this.carrito = carrito;
-        this.precioTotal = precioTotal;
+    public Pedido(Cliente cliente) {
         this.numOrden = contadorOrden++;
+        this.cliente = cliente;
     }
-
     public int getNumOrden() {
         return this.numOrden;
     }
-
-    public String[] getCarrito() {
-        return this.carrito;
-    }
-
-    public void setCarrito(String[] carrito) {
-        this.carrito = carrito;
-    }
-
-    public int getPrecioTotal() {
-        return this.precioTotal;
-    }
-
-    public void setPrecioTotal(int precioTotal) {
-        this.precioTotal = precioTotal;
-    }
-
     public EstadoPedido getEstadoPedido() {
         return estadoPedido;
     }
 
     public void setEstadoPedido(EstadoPedido estadoPedido) {
         this.estadoPedido = estadoPedido;
+    }
+    public int getNumCliente(){
+        return this.cliente.getNumCliente();
     }
 }
