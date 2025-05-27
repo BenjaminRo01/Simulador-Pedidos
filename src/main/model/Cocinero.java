@@ -23,7 +23,7 @@ public class Cocinero implements Runnable{
                     Pedido pedido = this.proveedorDePedidos.obtenerPedidoPendiente();
                     this.cocinaInterna.submit(()->{
                         try {
-                            TimeUnit.MILLISECONDS.sleep(ThreadLocalRandom.current().nextInt(500, 1500)); //Entre 0.5s - 1.5s
+                            TimeUnit.MILLISECONDS.sleep(ThreadLocalRandom.current().nextInt(3000, 4000)); //Entre 3s - 4s
                             this.proveedorDePedidos.agregarPedidoCocinado(pedido);
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();

@@ -6,17 +6,17 @@ public class Configuracion {
     private int cantidadClientes;
     private int cantidadCocineros;
     private int cantidadRepartidor;
-    private int maxThreadsCliente;
-    private int maxThreadsCocinero;
-    private int maxThreadsRepartidor;
+    private int cantidadMaxPedidosCliente;
+    private int capacidadMaxPedidosCocinero;
+    private int capacidadMaxPedidosRepartidor;
 
-    public Configuracion(int cantidadClientes, int cantidadCocineros, int cantidadRepartidor, int maxThreadsCliente, int maxThreadsCocinero, int maxThreadsRepartidor) {
+    public Configuracion(int cantidadClientes, int cantidadCocineros, int cantidadRepartidor, int cantidadMaxPedidosCliente, int capacidadMaxPedidosCocinero, int capacidadMaxPedidosRepartidor) {
         this.cantidadClientes = cantidadClientes;
         this.cantidadCocineros = cantidadCocineros;
         this.cantidadRepartidor = cantidadRepartidor;
-        this.maxThreadsCliente = maxThreadsCliente;
-        this.maxThreadsCocinero = maxThreadsCocinero;
-        this.maxThreadsRepartidor = maxThreadsRepartidor;
+        this.cantidadMaxPedidosCliente = cantidadMaxPedidosCliente;
+        this.capacidadMaxPedidosCocinero = capacidadMaxPedidosCocinero;
+        this.capacidadMaxPedidosRepartidor = capacidadMaxPedidosRepartidor;
     }
 
     public int getCantidadClientes() {
@@ -31,16 +31,16 @@ public class Configuracion {
         return this.cantidadRepartidor;
     }
 
-    public int getMaxThreadsCliente() {
-        return this.maxThreadsCliente;
+    public int getCantidadMaxPedidosCliente() {
+        return this.cantidadMaxPedidosCliente;
     }
 
-    public int getMaxThreadsCocinero() {
-        return this.maxThreadsCocinero;
+    public int getCapacidadMaxPedidosCocinero() {
+        return this.capacidadMaxPedidosCocinero;
     }
 
-    public int getMaxThreadsRepartidor() {
-        return this.maxThreadsRepartidor;
+    public int getCapacidadMaxPedidosRepartidor() {
+        return this.capacidadMaxPedidosRepartidor;
     }
 
     @Override
@@ -48,11 +48,11 @@ public class Configuracion {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Configuracion that = (Configuracion) o;
-        return cantidadClientes == that.cantidadClientes && cantidadCocineros == that.cantidadCocineros && cantidadRepartidor == that.cantidadRepartidor && maxThreadsCliente == that.maxThreadsCliente && maxThreadsCocinero == that.maxThreadsCocinero && maxThreadsRepartidor == that.maxThreadsRepartidor;
+        return cantidadClientes == that.cantidadClientes && cantidadCocineros == that.cantidadCocineros && cantidadRepartidor == that.cantidadRepartidor && cantidadMaxPedidosCliente == that.cantidadMaxPedidosCliente && capacidadMaxPedidosCocinero == that.capacidadMaxPedidosCocinero && capacidadMaxPedidosRepartidor == that.capacidadMaxPedidosRepartidor;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(cantidadClientes, cantidadCocineros, cantidadRepartidor, maxThreadsCliente, maxThreadsCocinero, maxThreadsRepartidor);
+        return Objects.hash(cantidadClientes, cantidadCocineros, cantidadRepartidor, cantidadMaxPedidosCliente, capacidadMaxPedidosCocinero, capacidadMaxPedidosRepartidor);
     }
 }

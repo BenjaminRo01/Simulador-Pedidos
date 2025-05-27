@@ -31,7 +31,7 @@ public class Repartidor implements Runnable{
                 }
                 // Simula el repartir los pedidos secuencialmente (por domicilio)
                 for(Pedido p : pedidosARepartir){
-                    TimeUnit.MILLISECONDS.sleep(ThreadLocalRandom.current().nextInt(1000, 2000)); // Entre 1s - 2s
+                    TimeUnit.MILLISECONDS.sleep(ThreadLocalRandom.current().nextInt(2000, 3000)); // Entre 2s - 3s
                     this.proveedorDePedidos.agregarPedidoEntregado(p);
                 }
             }

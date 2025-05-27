@@ -20,6 +20,8 @@ public class Cliente implements Runnable{
     public void run() {
         for (int i = 0; i < this.cantidadPedidos; i++) {
             Pedido pedido = new Pedido(this);
+            System.out.println("Pedido creado: #" + pedido.getNumOrden());
+
             try{
                 proveedorDePedidos.agregarPedidoPendiente(pedido);
                 // Simula el tiempo que lleva procesar el pedido en sí (simulando 0.1s - 1s)
