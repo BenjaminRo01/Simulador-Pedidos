@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 public class ColaDePedidos implements ProveedorDePedidos, ObservablePedidos {
     private BlockingQueue<Pedido> pedidosPendientes = new LinkedBlockingQueue<>();
@@ -24,7 +25,7 @@ public class ColaDePedidos implements ProveedorDePedidos, ObservablePedidos {
         Pedido pedidoPendiente = pedidosPendientes.take();
         pedidoPendiente.setEstadoPedido(EstadoPedido.EN_COCINA);
         notificarObservadores(pedidoPendiente);
-        return pedidoPendiente; //ver si se puede tomar y una vez tomado cambiar el estado, en este caso, a "cocinando"
+        return pedidoPendiente;
     }
     @Override
     public void agregarPedidoCocinado(Pedido pedido) throws InterruptedException {
@@ -34,7 +35,7 @@ public class ColaDePedidos implements ProveedorDePedidos, ObservablePedidos {
     }
     @Override
     public Pedido obtenerPedidoCocinado() throws InterruptedException {
-        Pedido pedidoCocinado = pedidosCocinados.poll(); // si no hay elementos, devuelve null.
+        Pedido pedidoCocinado = pedidosCocinados.poll(100, TimeUnit.MILLISECONDS); // si no hay elementos, devuelve null.
         if(pedidoCocinado == null){
             return null;
         }

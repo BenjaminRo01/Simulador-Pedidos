@@ -1,16 +1,17 @@
 package main.model;
 
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Cocinero implements Runnable{
-    private static int contadorCocinero;
+    private static final AtomicInteger contadorCocinero = new AtomicInteger();
     private final int numCocinero;
     private final ProveedorDePedidos proveedorDePedidos;
     private ExecutorService cocinaInterna;
     private final Semaphore capacidad;
 
     public Cocinero(int capacidadMaxima, ProveedorDePedidos proveedorDePedidos) {
-        this.numCocinero = contadorCocinero++;
+        this.numCocinero = contadorCocinero.incrementAndGet();
         this.proveedorDePedidos = proveedorDePedidos;
         this.cocinaInterna = Executors.newFixedThreadPool(capacidadMaxima);
         this.capacidad = new Semaphore(capacidadMaxima);
@@ -21,6 +22,7 @@ public class Cocinero implements Runnable{
             try{
                 if(this.capacidad.tryAcquire()){
                     Pedido pedido = this.proveedorDePedidos.obtenerPedidoPendiente();
+                    pedido.setCocineroAsignado(this);
                     this.cocinaInterna.submit(()->{
                         try {
                             TimeUnit.MILLISECONDS.sleep(ThreadLocalRandom.current().nextInt(3000, 4000)); //Entre 3s - 4s

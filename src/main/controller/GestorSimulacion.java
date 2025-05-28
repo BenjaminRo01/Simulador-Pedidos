@@ -24,12 +24,14 @@ public class GestorSimulacion {
     private ProveedorDePedidos proveedorDePedidos;
     private Configuracion config;
     private VistaSimulacion interfaz;
+    private EstadosSimulacion estadosSimulacion;
     public GestorSimulacion(Configuracion config, ProveedorDePedidos proveedorDePedidos, VistaSimulacion interfaz) {
         this.proveedorDePedidos = proveedorDePedidos;
         this.interfaz = interfaz;
         this.clientes = new ArrayList<>();
         this.cocineros = new ArrayList<>();
         this.repartidores = new ArrayList<>();
+        this.estadosSimulacion = EstadosSimulacion.FINALIZADA;
         if (proveedorDePedidos instanceof ObservablePedidos) {
             ((ObservablePedidos) proveedorDePedidos).agregarObservador((ObservadorPedidos) interfaz);
         }
@@ -45,40 +47,40 @@ public class GestorSimulacion {
     }
 
     private void configurarClientes(){
+        this.clientes.clear();
         int cantidad = this.config.getCantidadClientes();
         int threads = this.config.getCantidadMaxPedidosCliente();
-        this.clientes.clear();
         for (int i = 0; i < cantidad; i++) {
             this.clientes.add(new Cliente(threads, this.proveedorDePedidos));
         }
     }
     private void configurarCocineros(){
+        this.cocineros.clear();
         int cantidad = this.config.getCantidadCocineros();
         int threads = this.config.getCapacidadMaxPedidosCocinero();
-        this.cocineros.clear();
         for (int i = 0; i < cantidad; i++) {
             this.cocineros.add(new Cocinero(threads, this.proveedorDePedidos));
         }
     }
     private void configurarRepatidores(){
+        this.repartidores.clear();
         int cantidad = this.config.getCantidadRepartidor();
         int threads = this.config.getCapacidadMaxPedidosRepartidor();
-        this.repartidores.clear();
         for (int i = 0; i < cantidad; i++) {
             this.repartidores.add(new Repartidor(threads, this.proveedorDePedidos));
         }
     }
-    public void cambiarConfiguracion(int cantidadClientes, int cantidadCocineros, int cantidadRepartidor,
+    public void crearConfiguracion(int cantidadClientes, int cantidadCocineros, int cantidadRepartidor,
                                      int cantidadMaxPedidosCliente, int capacidadMaxPedidosPorCocinero, int capacidadMaxPedidosPorRepartidor){
         Configuracion nuevaConfig = new Configuracion(cantidadClientes,cantidadCocineros,cantidadRepartidor,
                 cantidadMaxPedidosCliente,capacidadMaxPedidosPorCocinero,capacidadMaxPedidosPorRepartidor);
-        if(!nuevaConfig.equals(this.config)){
-            cambiarConfiguracion(nuevaConfig);
-        }
+        cambiarConfiguracion(nuevaConfig);
     }
     public void iniciarSimulacion(){
         System.out.println("---- Configurando simulación ----");
         System.out.println("---- Iniciando simulación ----");
+        this.interfaz.inicializarPersonalEnVista(cocineros, repartidores);
+        this.estadosSimulacion = EstadosSimulacion.EN_EJECUCION;
         this.reiniciarPool();
         List<Runnable> actoresSimulacion = new ArrayList<>();
         actoresSimulacion.addAll(this.clientes);
@@ -96,14 +98,22 @@ public class GestorSimulacion {
     }
     public void apagarSimulacion(){
         System.out.println("---- Apagando simulación ----");
+        this.estadosSimulacion = EstadosSimulacion.FINALIZADA;
         this.simulacion.shutdown();
         try {
             if (!this.simulacion.awaitTermination(5, TimeUnit.SECONDS)) {
                 this.simulacion.shutdownNow();
+                this.interfaz.notificarLimpiarTodasLasSecciones();
             }
         } catch (InterruptedException e) {
             this.simulacion.shutdownNow();
             Thread.currentThread().interrupt();
         }
+    }
+    public boolean isSimulacionActiva() {
+        return this.estadosSimulacion == EstadosSimulacion.EN_EJECUCION;
+    }
+    public boolean isSimulacionFinalizada() {
+        return this.estadosSimulacion == EstadosSimulacion.FINALIZADA;
     }
 }

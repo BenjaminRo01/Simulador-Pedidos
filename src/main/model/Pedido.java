@@ -8,6 +8,9 @@ public class Pedido {
     private EstadoPedido estadoPedido;
     private Cliente cliente;
 
+    private Cocinero cocineroAsignado;
+    private Repartidor repartidorAsignado;
+
     public Pedido(Cliente cliente) {
         this.numOrden = contadorOrden.incrementAndGet();
         this.cliente = cliente;
@@ -25,5 +28,21 @@ public class Pedido {
     }
     public int getNumCliente(){
         return this.cliente.getNumCliente();
+    }
+
+    public Cocinero getCocineroAsignado() {
+        return cocineroAsignado;
+    }
+
+    public void setCocineroAsignado(Cocinero cocineroAsignado) {
+        this.cocineroAsignado = cocineroAsignado;
+    }
+
+    public Repartidor getRepartidorAsignado() {
+        return repartidorAsignado;
+    }
+
+    public void setRepartidorAsignado(Repartidor repartidorAsignado) {
+        this.repartidorAsignado = repartidorAsignado;
     }
 }

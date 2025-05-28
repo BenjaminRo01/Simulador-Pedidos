@@ -1,9 +1,16 @@
 package main.view;
 
+import main.model.Cocinero;
 import main.model.EstadoPedido;
 import main.model.Pedido;
+import main.model.Repartidor;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class VistaConsola implements VistaSimulacion, ObservadorPedidos{
+    private Map<Integer, EstadoPedido> estadoActualPedidos = new HashMap<>();
     @Override
     public void notificarNuevoPedido(Pedido pedido) {
         System.out.println("[Pedido pendiente]: #" + pedido.getNumOrden());
@@ -30,8 +37,24 @@ public class VistaConsola implements VistaSimulacion, ObservadorPedidos{
     }
 
     @Override
+    public void inicializarPersonalEnVista(List<Cocinero> cocineros, List<Repartidor> repartidores) {
+
+    }
+
+    @Override
+    public void notificarLimpiarTodasLasSecciones() {
+
+    }
+
+    @Override
     public void pedidoActualizado(Pedido pedido) {
         EstadoPedido estado = pedido.getEstadoPedido();
+        int numOrden = pedido.getNumOrden();
+        EstadoPedido estadoAnterior = estadoActualPedidos.get(numOrden);
+        if (estadoAnterior != null && estado.ordinal() <= estadoAnterior.ordinal()) {
+            return;
+        }
+        estadoActualPedidos.put(numOrden, estado);
 
         switch (estado) {
             case PENDIENTE:
