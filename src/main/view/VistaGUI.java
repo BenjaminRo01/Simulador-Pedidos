@@ -54,7 +54,7 @@ public class VistaGUI extends Application implements VistaSimulacion, Observador
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("Dashboard de Gestión de Pedidos - Cocina Rápida");
+        primaryStage.setTitle("Centro de Simulación de Pedidos Online");
         primaryStage.setMinHeight(600);
         primaryStage.setMinWidth(1000);
         Configuracion configuracion = new Configuracion(0,0,0,0,0,0);
@@ -309,6 +309,9 @@ public class VistaGUI extends Application implements VistaSimulacion, Observador
 
     @Override
     public void pedidoActualizado(Pedido pedido) {
+        if(this.gestorSimulacion.isSimulacionFinalizada()){
+            return;
+        }
         Platform.runLater(() -> {
             switch (pedido.getEstadoPedido()) {
                 case PENDIENTE:
