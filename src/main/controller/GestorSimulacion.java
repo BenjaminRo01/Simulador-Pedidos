@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 enum EstadosSimulacion{
-    DETENIDA, EN_EJECUCION, FINALIZADA
+    EN_EJECUCION, FINALIZADA
 }
 
 public class GestorSimulacion {

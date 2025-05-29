@@ -48,7 +48,6 @@ public class VistaGUI extends Application implements VistaSimulacion, Observador
     private TextField capacidadRepartidorField;
 
     private Button playButton;
-    private Button pauseButton;
     private Button finalizeButton;
 
 
@@ -96,17 +95,14 @@ public class VistaGUI extends Application implements VistaSimulacion, Observador
         controlButtons.setAlignment(Pos.CENTER);
         controlButtons.setPadding(new Insets(10, 0, 0, 0));
         playButton = new Button("▶ Iniciar Simulación");
-        pauseButton = new Button("❚❚ Pausar");
         finalizeButton = new Button("■ Finalizar");
 
         playButton.setMaxWidth(Double.MAX_VALUE);
-        pauseButton.setMaxWidth(Double.MAX_VALUE);
         finalizeButton.setMaxWidth(Double.MAX_VALUE);
         playButton.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15;");
-        pauseButton.setStyle("-fx-background-color: #f39c12; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15;");
         finalizeButton.setStyle("-fx-background-color: #c0392b; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15;");
 
-        controlButtons.getChildren().addAll(playButton, pauseButton, finalizeButton);
+        controlButtons.getChildren().addAll(playButton, finalizeButton);
         configPanel.getChildren().add(controlButtons);
 
         HBox.setHgrow(configPanel, Priority.NEVER);
@@ -172,7 +168,6 @@ public class VistaGUI extends Application implements VistaSimulacion, Observador
         finalizeButton.setOnAction(event -> handleFinalizarSimulacion());
 
         finalizeButton.setDisable(true);
-        pauseButton.setDisable(true);
     }
 
     private void handleIniciarSimulacion() {
@@ -193,7 +188,6 @@ public class VistaGUI extends Application implements VistaSimulacion, Observador
             setConfigurationFieldsEditable(false);
             playButton.setDisable(true);
             finalizeButton.setDisable(false);
-            pauseButton.setDisable(false);
 
             // 2. Antes de iniciar la simulación real, la vista se resetea y el personal se inicializa
             // Esta llamada ahora también manejará la reconstrucción de las cajas de cocineros/repartidores
@@ -206,12 +200,11 @@ public class VistaGUI extends Application implements VistaSimulacion, Observador
 
     private void handleFinalizarSimulacion() {
         if (gestorSimulacion.isSimulacionActiva()) {
+            finalizeButton.setDisable(true);
             gestorSimulacion.apagarSimulacion();
 
             setConfigurationFieldsEditable(true);
             playButton.setDisable(false);
-            finalizeButton.setDisable(true);
-            pauseButton.setDisable(true);
         }
     }
 
