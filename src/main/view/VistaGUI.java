@@ -1,9 +1,7 @@
 package main.view;
 
-import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -13,8 +11,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-import javafx.util.Duration;
 import main.config.Configuracion;
 import main.controller.GestorSimulacion;
 import main.model.*;
@@ -22,6 +18,8 @@ import main.model.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class VistaGUI extends Application implements VistaSimulacion, ObservadorPedidos{
     private FlowPane pedidosPendientesContainer;
@@ -49,6 +47,8 @@ public class VistaGUI extends Application implements VistaSimulacion, Observador
 
     private Button playButton;
     private Button finalizeButton;
+    private ProgressIndicator loadingIndicator;
+    private ExecutorService backgroundExecutor; // Para ejecutar tareas de fondo para evitar congelamiento de la interfaz.
 
 
     @Override
@@ -60,8 +60,12 @@ public class VistaGUI extends Application implements VistaSimulacion, Observador
         ProveedorDePedidos proveedorDePedidos = new ColaDePedidos();
         gestorSimulacion = new GestorSimulacion(configuracion, proveedorDePedidos,this);
 
+        backgroundExecutor = Executors.newSingleThreadExecutor();
         primaryStage.setOnCloseRequest(e -> {
-            gestorSimulacion.apagarSimulacion();
+            if (gestorSimulacion.isSimulacionActiva()) {
+                gestorSimulacion.apagarSimulacion();
+            }
+            backgroundExecutor.shutdownNow();
             Platform.exit();
         });
 
@@ -102,7 +106,12 @@ public class VistaGUI extends Application implements VistaSimulacion, Observador
         playButton.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15;");
         finalizeButton.setStyle("-fx-background-color: #c0392b; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15;");
 
-        controlButtons.getChildren().addAll(playButton, finalizeButton);
+        loadingIndicator = new ProgressIndicator();
+        loadingIndicator.setMaxSize(30, 30);
+        loadingIndicator.setVisible(false);
+        VBox.setMargin(loadingIndicator, new Insets(10, 0, 0, 0));
+
+        controlButtons.getChildren().addAll(playButton, finalizeButton, loadingIndicator);
         configPanel.getChildren().add(controlButtons);
 
         HBox.setHgrow(configPanel, Priority.NEVER);
@@ -137,11 +146,6 @@ public class VistaGUI extends Application implements VistaSimulacion, Observador
         pedidosGrid.add(createDisplaySection("PEDIDOS EN REPARTO", pedidosEnRepartoGrid, Color.LIGHTCORAL, 180), 1, 1);
         pedidosGrid.add(createDisplaySection("PEDIDOS ENTREGADOS", pedidosEntregadosContainer, Color.LIGHTGRAY, 100), 0, 2, 2, 1); // Más corto para los entregados
 
-        // --- Ajuste de filas del GridPane ---
-        // Establecer alturas preferidas para las filas. Vgrow.ALWAYS las estiraría.
-        // Si queremos que cada fila tome un porcentaje específico, podemos usar percentHeight.
-        // O si queremos que se ajusten al contenido pero con un mínimo, podemos usar prefHeight y Vgrow.NEVER.
-        // Para que se adapten a la pantalla pero mantengan proporciones, usamos percentHeight y Vgrow.ALWAYS.
         RowConstraints row1 = new RowConstraints();
         row1.setPercentHeight(35); // 35% del espacio vertical para la primera fila
         row1.setVgrow(Priority.ALWAYS);
@@ -200,11 +204,13 @@ public class VistaGUI extends Application implements VistaSimulacion, Observador
 
     private void handleFinalizarSimulacion() {
         if (gestorSimulacion.isSimulacionActiva()) {
+            loadingIndicator.setVisible(true);
             finalizeButton.setDisable(true);
-            gestorSimulacion.apagarSimulacion();
-
-            setConfigurationFieldsEditable(true);
-            playButton.setDisable(false);
+            backgroundExecutor.execute(() -> {
+                gestorSimulacion.apagarSimulacion();
+                playButton.setDisable(false);
+                setConfigurationFieldsEditable(true);
+            });
         }
     }
 
@@ -471,6 +477,7 @@ public class VistaGUI extends Application implements VistaSimulacion, Observador
             }
 
             pedidoBoxes.clear();
+            loadingIndicator.setVisible(false);
         });
     }
 
@@ -482,12 +489,12 @@ public class VistaGUI extends Application implements VistaSimulacion, Observador
             box.setAlignment(Pos.CENTER_LEFT);
             box.setPadding(new Insets(3, 5, 3, 5));
             box.setStyle("-fx-background-color: #ffffff; -fx-border-color: #ddd; -fx-border-width: 1; -fx-border-radius: 3;");
-            box.setPrefWidth(120); // <-- Ancho preferido para cada caja de pedido
-            box.setMaxWidth(120); // <-- Ancho máximo para cada caja de pedido
+            box.setPrefWidth(120);
+            box.setMaxWidth(120);
             Label label = new Label(pedidoInfo);
-            label.setWrapText(true); // Permite que el texto se envuelva si es muy largo
+            label.setWrapText(true);
             box.getChildren().add(label);
-            HBox.setHgrow(box, Priority.NEVER); // No permitir que crezca horizontalmente
+            HBox.setHgrow(box, Priority.NEVER);
             pedidoBoxes.put(pedido.getNumOrden(), box);
         } else {
             ((Label) box.getChildren().get(0)).setText(pedidoInfo);

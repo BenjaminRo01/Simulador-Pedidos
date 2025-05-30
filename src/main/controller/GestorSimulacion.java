@@ -103,11 +103,13 @@ public class GestorSimulacion {
         try {
             if (!this.simulacion.awaitTermination(5, TimeUnit.SECONDS)) {
                 this.simulacion.shutdownNow();
-                this.interfaz.notificarLimpiarTodasLasSecciones();
             }
         } catch (InterruptedException e) {
             this.simulacion.shutdownNow();
             Thread.currentThread().interrupt();
+        }
+        finally {
+            this.interfaz.notificarLimpiarTodasLasSecciones();
         }
     }
     public boolean isSimulacionActiva() {
