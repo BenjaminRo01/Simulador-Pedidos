@@ -3,12 +3,12 @@ package main.config;
 import java.util.Objects;
 
 public class Configuracion {
-    private int cantidadClientes;
-    private int cantidadCocineros;
-    private int cantidadRepartidor;
-    private int cantidadMaxPedidosCliente;
-    private int capacidadMaxPedidosCocinero;
-    private int capacidadMaxPedidosRepartidor;
+    private final int cantidadClientes;
+    private final int cantidadCocineros;
+    private final int cantidadRepartidor;
+    private final int cantidadMaxPedidosCliente;
+    private final int capacidadMaxPedidosCocinero;
+    private final int capacidadMaxPedidosRepartidor;
 
     public Configuracion(int cantidadClientes, int cantidadCocineros, int cantidadRepartidor, int cantidadMaxPedidosCliente, int capacidadMaxPedidosCocinero, int capacidadMaxPedidosRepartidor) {
         this.cantidadClientes = cantidadClientes;
