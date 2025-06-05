@@ -14,4 +14,6 @@ public interface VistaSimulacion {
     void notificarEntrega(Pedido pedido);
     void inicializarPersonalEnVista(List<Cocinero> cocineros, List<Repartidor> repartidores);
     void notificarLimpiarTodasLasSecciones();
+    void notificarInicioFinalizacion();
+    void notificarSimulacionFinalizada();
 }

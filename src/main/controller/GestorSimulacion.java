@@ -11,12 +11,13 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 enum EstadosSimulacion{
     EN_EJECUCION, FINALIZADA
 }
 
-public class GestorSimulacion {
+public class GestorSimulacion implements ObservadorPedidos{
     private ExecutorService simulacion;
     private List<Cliente> clientes;
     private List<Cocinero> cocineros;
@@ -25,6 +26,9 @@ public class GestorSimulacion {
     private Configuracion config;
     private VistaSimulacion interfaz;
     private EstadosSimulacion estadosSimulacion;
+    private int totalPedidosEsperados;
+    private AtomicInteger pedidosEntregadosContador;
+
     public GestorSimulacion(Configuracion config, ProveedorDePedidos proveedorDePedidos, VistaSimulacion interfaz) {
         this.proveedorDePedidos = proveedorDePedidos;
         this.interfaz = interfaz;
@@ -34,6 +38,7 @@ public class GestorSimulacion {
         this.estadosSimulacion = EstadosSimulacion.FINALIZADA;
         if (proveedorDePedidos instanceof ObservablePedidos) {
             ((ObservablePedidos) proveedorDePedidos).agregarObservador((ObservadorPedidos) interfaz);
+            ((ObservablePedidos) proveedorDePedidos).agregarObservador(this);
         }
         this.simulacion = Executors.newCachedThreadPool();
         this.cambiarConfiguracion(config);
@@ -79,6 +84,11 @@ public class GestorSimulacion {
     public void iniciarSimulacion(){
         System.out.println("---- Configurando simulación ----");
         System.out.println("---- Iniciando simulación ----");
+
+        //Se inicializan los contadores en base a la configuracion del cliente
+        this.totalPedidosEsperados = this.config.getCantidadClientes() * this.config.getCantidadMaxPedidosCliente();
+        this.pedidosEntregadosContador = new AtomicInteger(0);
+
         this.interfaz.inicializarPersonalEnVista(cocineros, repartidores);
         this.estadosSimulacion = EstadosSimulacion.EN_EJECUCION;
         this.reiniciarPool();
@@ -97,6 +107,9 @@ public class GestorSimulacion {
         }
     }
     public void apagarSimulacion(){
+        if(isSimulacionFinalizada()){
+            return; //Para evitar multiples llamadas cuando ya se esta apagando.
+        }
         System.out.println("---- Apagando simulación ----");
         this.estadosSimulacion = EstadosSimulacion.FINALIZADA;
         this.simulacion.shutdown();
@@ -110,6 +123,7 @@ public class GestorSimulacion {
         }
         finally {
             this.interfaz.notificarLimpiarTodasLasSecciones();
+            this.interfaz.notificarSimulacionFinalizada();
         }
     }
     public boolean isSimulacionActiva() {
@@ -117,5 +131,16 @@ public class GestorSimulacion {
     }
     public boolean isSimulacionFinalizada() {
         return this.estadosSimulacion == EstadosSimulacion.FINALIZADA;
+    }
+
+    @Override
+    public void pedidoActualizado(Pedido pedido) {
+        if(pedido.getEstadoPedido() == EstadoPedido.ENTREGADO && isSimulacionActiva()){
+            int entregados = pedidosEntregadosContador.incrementAndGet();
+            if (entregados == this.totalPedidosEsperados){
+                this.interfaz.notificarInicioFinalizacion();
+                new Thread(this::apagarSimulacion).start(); // Se llama de forma asincronica para no bloquear el hilo notificador
+            }
+        }
     }
 }

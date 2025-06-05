@@ -208,8 +208,6 @@ public class VistaGUI extends Application implements VistaSimulacion, Observador
             finalizeButton.setDisable(true);
             backgroundExecutor.execute(() -> {
                 gestorSimulacion.apagarSimulacion();
-                playButton.setDisable(false);
-                setConfigurationFieldsEditable(true);
             });
         }
     }
@@ -478,6 +476,25 @@ public class VistaGUI extends Application implements VistaSimulacion, Observador
 
             pedidoBoxes.clear();
             loadingIndicator.setVisible(false);
+        });
+    }
+
+    @Override
+    public void notificarInicioFinalizacion() {
+        Platform.runLater(() -> {
+            loadingIndicator.setVisible(true);
+            finalizeButton.setDisable(true);
+        });
+    }
+
+    @Override
+    public void notificarSimulacionFinalizada() {
+        // Se asegura que la actualizacion grafica se ejecuten en el hilo de app JavaFx
+        Platform.runLater(() -> {
+            loadingIndicator.setVisible(false);
+            finalizeButton.setDisable(true);
+            playButton.setDisable(false);
+            setConfigurationFieldsEditable(true);
         });
     }
 

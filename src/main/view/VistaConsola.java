@@ -47,6 +47,16 @@ public class VistaConsola implements VistaSimulacion, ObservadorPedidos{
     }
 
     @Override
+    public void notificarInicioFinalizacion() {
+        System.out.println("Se inicia el proceso de finalización del simulador.");
+    }
+
+    @Override
+    public void notificarSimulacionFinalizada() {
+        System.out.println("Todos los pedidos han sido entregados.");
+    }
+
+    @Override
     public void pedidoActualizado(Pedido pedido) {
         EstadoPedido estado = pedido.getEstadoPedido();
         int numOrden = pedido.getNumOrden();
