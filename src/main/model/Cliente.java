@@ -5,6 +5,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Cliente implements Runnable{
+    public static final int TIEMPO_DESDE = 1000;
+    public static final int TIEMPO_HASTA = 1500;
     private static final AtomicInteger contadorCliente = new AtomicInteger();
     private final int numCliente;
     private int cantidadPedidos;
@@ -23,8 +25,8 @@ public class Cliente implements Runnable{
 
             try{
                 proveedorDePedidos.agregarPedidoPendiente(pedido);
-                // Simula el tiempo que lleva procesar el pedido en sí (simulando 0.1s - 1s)
-                TimeUnit.MILLISECONDS.sleep(ThreadLocalRandom.current().nextInt(1000, 1500));
+                // Simula el tiempo que lleva procesar el pedido en sí (simulando 1s - 1.5s)
+                TimeUnit.MILLISECONDS.sleep(ThreadLocalRandom.current().nextInt(TIEMPO_DESDE, TIEMPO_HASTA));
             }
             catch (InterruptedException e){
                 System.out.println("Cliente " + this.numCliente + " fue interrumpido.");

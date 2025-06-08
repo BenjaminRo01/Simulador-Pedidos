@@ -4,6 +4,9 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Cocinero implements Runnable{
+    public static final int TIEMPO_DESDE = 3000;
+    public static final int TIEMPO_HASTA = 4000;
+    public static final int TIEMPO_ESPERA_REINTENTO = 100;
     private static final AtomicInteger contadorCocinero = new AtomicInteger();
     private final int numCocinero;
     private final ProveedorDePedidos proveedorDePedidos;
@@ -25,7 +28,7 @@ public class Cocinero implements Runnable{
                     pedido.setCocineroAsignado(this);
                     this.cocinaInterna.submit(()->{
                         try {
-                            TimeUnit.MILLISECONDS.sleep(ThreadLocalRandom.current().nextInt(3000, 4000)); //Entre 3s - 4s
+                            TimeUnit.MILLISECONDS.sleep(ThreadLocalRandom.current().nextInt(TIEMPO_DESDE, TIEMPO_HASTA)); //Entre 3s - 4s
                             this.proveedorDePedidos.agregarPedidoCocinado(pedido);
                         } catch (InterruptedException e) {
                             Thread.currentThread().interrupt();
@@ -36,7 +39,7 @@ public class Cocinero implements Runnable{
                     });
                 }
                 else{
-                    TimeUnit.MILLISECONDS.sleep(100); //espera un poco antes de volver a intentar
+                    TimeUnit.MILLISECONDS.sleep(TIEMPO_ESPERA_REINTENTO); //espera un poco antes de volver a intentar
                 }
             }
             catch(InterruptedException e){

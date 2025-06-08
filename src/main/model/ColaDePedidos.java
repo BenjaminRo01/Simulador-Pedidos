@@ -35,7 +35,7 @@ public class ColaDePedidos implements ProveedorDePedidos, ObservablePedidos {
     }
     @Override
     public Pedido obtenerPedidoCocinado() throws InterruptedException {
-        Pedido pedidoCocinado = pedidosCocinados.poll(100, TimeUnit.MILLISECONDS); // si no hay elementos, devuelve null.
+        Pedido pedidoCocinado = pedidosCocinados.poll(100, TimeUnit.MILLISECONDS); // espera hasta 100ms si hay elementos, si no devuelve null.
         if(pedidoCocinado == null){
             return null;
         }

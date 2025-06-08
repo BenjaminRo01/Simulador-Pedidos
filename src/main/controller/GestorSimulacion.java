@@ -18,6 +18,7 @@ enum EstadosSimulacion{
 }
 
 public class GestorSimulacion implements ObservadorPedidos{
+    public static final int TIEMPO_ESPERA_FINALIZACION = 5;
     private ExecutorService simulacion;
     private List<Cliente> clientes;
     private List<Cocinero> cocineros;
@@ -53,26 +54,26 @@ public class GestorSimulacion implements ObservadorPedidos{
 
     private void configurarClientes(){
         this.clientes.clear();
-        int cantidad = this.config.getCantidadClientes();
-        int threads = this.config.getCantidadMaxPedidosCliente();
-        for (int i = 0; i < cantidad; i++) {
-            this.clientes.add(new Cliente(threads, this.proveedorDePedidos));
+        int cantClientes = this.config.getCantidadClientes();
+        int cantPedidos = this.config.getCantidadMaxPedidosCliente();
+        for (int i = 0; i < cantClientes; i++) {
+            this.clientes.add(new Cliente(cantPedidos, this.proveedorDePedidos));
         }
     }
     private void configurarCocineros(){
         this.cocineros.clear();
-        int cantidad = this.config.getCantidadCocineros();
-        int threads = this.config.getCapacidadMaxPedidosCocinero();
-        for (int i = 0; i < cantidad; i++) {
-            this.cocineros.add(new Cocinero(threads, this.proveedorDePedidos));
+        int cantCocineros = this.config.getCantidadCocineros();
+        int cantPedidos = this.config.getCapacidadMaxPedidosCocinero();
+        for (int i = 0; i < cantCocineros; i++) {
+            this.cocineros.add(new Cocinero(cantPedidos, this.proveedorDePedidos));
         }
     }
     private void configurarRepatidores(){
         this.repartidores.clear();
-        int cantidad = this.config.getCantidadRepartidor();
-        int threads = this.config.getCapacidadMaxPedidosRepartidor();
-        for (int i = 0; i < cantidad; i++) {
-            this.repartidores.add(new Repartidor(threads, this.proveedorDePedidos));
+        int cantRepartidores = this.config.getCantidadRepartidor();
+        int cantPedidos = this.config.getCapacidadMaxPedidosRepartidor();
+        for (int i = 0; i < cantRepartidores; i++) {
+            this.repartidores.add(new Repartidor(cantPedidos, this.proveedorDePedidos));
         }
     }
     public void crearConfiguracion(int cantidadClientes, int cantidadCocineros, int cantidadRepartidor,
@@ -114,7 +115,7 @@ public class GestorSimulacion implements ObservadorPedidos{
         this.estadosSimulacion = EstadosSimulacion.FINALIZADA;
         this.simulacion.shutdown();
         try {
-            if (!this.simulacion.awaitTermination(5, TimeUnit.SECONDS)) {
+            if (!this.simulacion.awaitTermination(TIEMPO_ESPERA_FINALIZACION, TimeUnit.SECONDS)) {
                 this.simulacion.shutdownNow();
             }
         } catch (InterruptedException e) {
